@@ -1,9 +1,9 @@
 # This is based on https://github.com/jellyfin/jellyfin-web/blob/master/src/components/syncPlay/timeSyncManager.js
-import threading
-import logging
 import datetime
+import logging
+import threading
 
-LOG = logging.getLogger('Jellyfin.' + __name__)
+LOG = logging.getLogger("Jellyfin." + __name__)
 
 number_of_tracked_measurements = 8
 polling_interval_greedy = 1
@@ -12,7 +12,9 @@ greedy_ping_count = 3
 
 
 class Measurement:
-    def __init__(self, request_sent, request_received, response_sent, response_received):
+    def __init__(
+        self, request_sent, request_received, response_sent, response_received
+    ):
         self.request_sent = request_sent
         self.request_received = request_received
         self.response_sent = response_sent
@@ -20,11 +22,16 @@ class Measurement:
 
     def get_offset(self):
         """Time offset from server."""
-        return ((self.request_received - self.request_sent) + (self.response_sent - self.response_received)) / 2.0
+        return (
+            (self.request_received - self.request_sent)
+            + (self.response_sent - self.response_received)
+        ) / 2.0
 
     def get_delay(self):
         """Get round-trip delay."""
-        return (self.response_received - self.request_sent) - (self.response_sent - self.request_received)
+        return (self.response_received - self.request_sent) - (
+            self.response_sent - self.request_received
+        )
 
     def get_ping(self):
         """Get ping time."""
@@ -41,8 +48,12 @@ class _TimeSyncThread(threading.Thread):
         while not self.halt.wait(self.manager.polling_interval):
             try:
                 measurement = self.manager.client.jellyfin.utc_time()
-                measurement = Measurement(measurement["request_sent"], measurement["request_received"],
-                                          measurement["response_sent"], measurement["response_received"])
+                measurement = Measurement(
+                    measurement["request_sent"],
+                    measurement["request_received"],
+                    measurement["response_sent"],
+                    measurement["response_received"],
+                )
 
                 self.manager.update_time_offset(measurement)
 
@@ -78,11 +89,19 @@ class TimeSyncManager:
 
     def get_time_offset(self):
         """Gets time offset with server."""
-        return self.measurement.get_offset() if self.measurement is not None else datetime.timedelta(0)
+        return (
+            self.measurement.get_offset()
+            if self.measurement is not None
+            else datetime.timedelta(0)
+        )
 
     def get_ping(self):
         """Gets ping time to server."""
-        return self.measurement.get_ping() if self.measurement is not None else datetime.timedelta(0)
+        return (
+            self.measurement.get_ping()
+            if self.measurement is not None
+            else datetime.timedelta(0)
+        )
 
     def update_time_offset(self, measurement):
         """Updates time offset between server and client."""

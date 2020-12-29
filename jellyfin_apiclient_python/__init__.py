@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
-from __future__ import division, absolute_import, print_function, unicode_literals
-
-#################################################################################################
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import logging
 
 from .client import JellyfinClient
+
+#################################################################################################
+
 
 #################################################################################################
 
@@ -16,16 +17,17 @@ class NullHandler(logging.Handler):
 
 
 loghandler = NullHandler
-LOG = logging.getLogger('Jellyfin')
+LOG = logging.getLogger("Jellyfin")
 
 #################################################################################################
 
 
 def config(level=logging.INFO):
 
-    logger = logging.getLogger('Jellyfin')
+    logger = logging.getLogger("Jellyfin")
     logger.addHandler(Jellyfin.loghandler())
     logger.setLevel(level)
+
 
 def has_attribute(obj, name):
     try:
@@ -34,8 +36,8 @@ def has_attribute(obj, name):
     except AttributeError:
         return False
 
-def ensure_client():
 
+def ensure_client():
     def decorator(func):
         def wrapper(self, *args, **kwargs):
 
@@ -45,22 +47,23 @@ def ensure_client():
             return func(self, *args, **kwargs)
 
         return wrapper
+
     return decorator
 
 
 class Jellyfin(object):
 
-    ''' This is your Jellyfinclient, you can create more than one. The server_id is only a temporary thing
-        to communicate with the JellyfinClient().
+    """This is your Jellyfinclient, you can create more than one. The server_id is only a temporary thing
+    to communicate with the JellyfinClient().
 
-        from jellyfin import Jellyfin
+    from jellyfin import Jellyfin
 
-        Jellyfin('123456').config.data['app']
+    Jellyfin('123456').config.data['app']
 
-        # Permanent client reference
-        client = Jellyfin('123456').get_client()
-        client.config.data['app']
-    '''
+    # Permanent client reference
+    client = Jellyfin('123456').get_client()
+    client.config.data['app']
+    """
 
     # Borg - multiple instances, shared state
     _shared_state = {}
@@ -78,9 +81,9 @@ class Jellyfin(object):
     @classmethod
     def set_loghandler(cls, func=loghandler, level=logging.INFO):
 
-        for handler in logging.getLogger('Jellyfin').handlers:
+        for handler in logging.getLogger("Jellyfin").handlers:
             if isinstance(handler, cls.loghandler):
-                logging.getLogger('Jellyfin').removeHandler(handler)
+                logging.getLogger("Jellyfin").removeHandler(handler)
 
         cls.loghandler = func
         config(level)
@@ -124,7 +127,7 @@ class Jellyfin(object):
 
         self.client[self.server_id] = JellyfinClient()
 
-        if self.server_id == 'default':
+        if self.server_id == "default":
             LOG.info("---[ START JELLYFINCLIENT ]---")
         else:
             LOG.info("---[ START JELLYFINCLIENT: %s ]---", self.server_id)

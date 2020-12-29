@@ -1,30 +1,31 @@
 # -*- coding: utf-8 -*-
-from __future__ import division, absolute_import, print_function, unicode_literals
-
-#################################################################################################
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import logging
 
 from . import api
 from .configuration import Config
+from .connection_manager import CONNECTION_STATE, ConnectionManager
 from .http import HTTP
-from .ws_client import WSClient
-from .connection_manager import ConnectionManager, CONNECTION_STATE
 from .timesync_manager import TimeSyncManager
+from .ws_client import WSClient
 
 #################################################################################################
 
-LOG = logging.getLogger('JELLYFIN.' + __name__)
+
+#################################################################################################
+
+LOG = logging.getLogger("JELLYFIN." + __name__)
 
 #################################################################################################
 
 
 def callback(message, data):
 
-    ''' Callback function should received message, data
-        message: string
-        data: json dictionary
-    '''
+    """Callback function should received message, data
+    message: string
+    data: json dictionary
+    """
     pass
 
 
@@ -55,13 +56,13 @@ class JellyfinClient(object):
         self.set_credentials(credentials or {})
         state = self.auth.connect(options or {})
 
-        if state['State'] == CONNECTION_STATE['SignedIn']:
+        if state["State"] == CONNECTION_STATE["SignedIn"]:
 
             LOG.info("User is authenticated.")
             self.logged_in = True
-            self.callback("ServerOnline", {'Id': self.auth.server_id})
+            self.callback("ServerOnline", {"Id": self.auth.server_id})
 
-        state['Credentials'] = self.get_credentials()
+        state["Credentials"] = self.get_credentials()
 
         return state
 
