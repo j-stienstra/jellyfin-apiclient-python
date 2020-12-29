@@ -1,4 +1,4 @@
-# This is based on https://github.com/jellyfin/jellyfin-web/blob/master/src/components/syncPlay/timeSyncManager.js
+# This is based on https://github.com/jellyfin/jellyfin-web/blob/master/src/components/syncPlay/core/timeSync/TimeSync.js
 import datetime
 import logging
 import threading
@@ -58,7 +58,9 @@ class _TimeSyncThread(threading.Thread):
                 self.manager.update_time_offset(measurement)
 
                 if self.manager.pings > greedy_ping_count:
-                    self.manager.polling_interval = polling_interval_low_profile
+                    self.manager.polling_interval = (
+                        polling_interval_low_profile
+                    )
                 else:
                     self.manager.pings += 1
 
@@ -144,7 +146,7 @@ class TimeSyncManager:
         return local + self.get_time_offset()
 
     def subscribe_time_offset(self, subscriber_callable):
-        """Pass a callback function to get notified about time offset changes."""
+        """Pass a callback function to call when time offset changes."""
         self.subscribers.add(subscriber_callable)
 
     def remove_subscriber(self, subscriber_callable):

@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import (
+    absolute_import,
+    division,
+    print_function,
+    unicode_literals,
+)
 
 import json
 import logging
@@ -10,14 +15,14 @@ import websocket
 
 from .keepalive import KeepAlive
 
-#################################################################################################
+#############################################################################
 
 
-##################################################################################################
+#############################################################################
 
 LOG = logging.getLogger("JELLYFIN." + __name__)
 
-##################################################################################################
+#############################################################################
 
 
 class WSClient(threading.Thread):
@@ -57,7 +62,11 @@ class WSClient(threading.Thread):
             if server.startswith("https")
             else server.replace("http", "ws")
         )
-        wsc_url = "%s/socket?api_key=%s&device_id=%s" % (server, token, device_id)
+        wsc_url = "%s/socket?api_key=%s&device_id=%s" % (
+            server,
+            token,
+            device_id,
+        )
         verify = self.client.config.data.get("auth.ssl", False)
 
         LOG.info("Websocket url: %s", wsc_url)

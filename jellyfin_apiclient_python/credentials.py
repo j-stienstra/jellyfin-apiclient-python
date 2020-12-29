@@ -1,18 +1,23 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import (
+    absolute_import,
+    division,
+    print_function,
+    unicode_literals,
+)
 
 import logging
 import time
 from datetime import datetime
 
-#################################################################################################
+#############################################################################
 
 
-#################################################################################################
+#############################################################################
 
 LOG = logging.getLogger("JELLYFIN." + __name__)
 
-#################################################################################################
+#############################################################################
 
 
 class Credentials(object):
@@ -42,7 +47,9 @@ class Credentials(object):
                 self.credentials = {}
 
             LOG.debug("credentials initialized with: %s", self.credentials)
-            self.credentials["Servers"] = self.credentials.setdefault("Servers", [])
+            self.credentials["Servers"] = self.credentials.setdefault(
+                "Servers", []
+            )
 
     def get(self):
         self._ensure()
@@ -87,7 +94,9 @@ class Credentials(object):
                     if self._date_object(
                         server["DateLastAccessed"]
                     ) > self._date_object(existing["DateLastAccessed"]):
-                        existing["DateLastAccessed"] = server["DateLastAccessed"]
+                        existing["DateLastAccessed"] = server[
+                            "DateLastAccessed"
+                        ]
 
                 if server.get("UserLinkType"):
                     existing["UserLinkType"] = server["UserLinkType"]
@@ -109,7 +118,9 @@ class Credentials(object):
                     existing["Name"] = server["Name"]
 
                 if server.get("LastConnectionMode") is not None:
-                    existing["LastConnectionMode"] = server["LastConnectionMode"]
+                    existing["LastConnectionMode"] = server[
+                        "LastConnectionMode"
+                    ]
 
                 if server.get("ConnectServerId"):
                     existing["ConnectServerId"] = server["ConnectServerId"]
@@ -126,6 +137,8 @@ class Credentials(object):
         except (ImportError, TypeError):
             # TypeError: attribute of type 'NoneType' is not callable
             # Known Kodi/python error
-            date_obj = datetime(*(time.strptime(date, "%Y-%m-%dT%H:%M:%SZ")[0:6]))
+            date_obj = datetime(
+                *(time.strptime(date, "%Y-%m-%dT%H:%M:%SZ")[0:6])
+            )
 
         return date_obj

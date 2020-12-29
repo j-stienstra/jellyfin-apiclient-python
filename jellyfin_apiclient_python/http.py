@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import (
+    absolute_import,
+    division,
+    print_function,
+    unicode_literals,
+)
 
 import json
 import logging
@@ -10,14 +15,14 @@ from six import string_types
 
 from .exceptions import HTTPException
 
-#################################################################################################
+#############################################################################
 
 
-#################################################################################################
+#############################################################################
 
 LOG = logging.getLogger("Jellyfin." + __name__)
 
-#################################################################################################
+#############################################################################
 
 
 class HTTP(object):
@@ -51,33 +56,41 @@ class HTTP(object):
             LOG.info("--<[ session/%s ]", id(self.session))
             self.session.close()
         except Exception as error:
-            LOG.warning("The requests session could not be terminated: %s", error)
+            LOG.warning(
+                "The requests session could not be terminated: %s", error
+            )
 
     def _replace_user_info(self, string):
 
         if "{server}" in string:
             if self.config.data.get("auth.server", None):
-                string = string.replace("{server}", self.config.data["auth.server"])
+                string = string.replace(
+                    "{server}", self.config.data["auth.server"]
+                )
             else:
                 LOG.debug("Server address not set")
 
         if "{UserId}" in string:
             if self.config.data.get("auth.user_id", None):
-                string = string.replace("{UserId}", self.config.data["auth.user_id"])
+                string = string.replace(
+                    "{UserId}", self.config.data["auth.user_id"]
+                )
             else:
                 LOG.debug("UserId is not set.")
 
         if "{DeviceId}" in string:
             if self.config.data.get("app.device_id", None):
-                string = string.replace("{DeviceId}", self.config.data["app.device_id"])
+                string = string.replace(
+                    "{DeviceId}", self.config.data["app.device_id"]
+                )
             else:
                 LOG.debug("DeviceId is not set.")
 
         return string
 
     def request(self, data, session=None, dest_file=None):
-
-        """Give a chance to retry the connection. Jellyfin sometimes can be slow to answer back
+        """Perform an HTTP request. Will retry 5 times by default.
+        Jellyfin sometimes can be slow to answer back.
         data dictionary can contain:
         type: GET, POST, etc.
         url: (optional)
@@ -85,7 +98,8 @@ class HTTP(object):
         params: request parameters (optional)
         json: request body (optional)
         headers: (optional),
-        verify: ssl certificate, True (verify using device built-in library) or False
+        verify: verify ssl certificate (default False)
+            (ssl verfification using device built-in library)
         """
         if not data:
             raise AttributeError("Request cannot be empty")
@@ -183,10 +197,11 @@ class HTTP(object):
             except requests.exceptions.MissingSchema as error:
                 LOG.error("Request missing Schema. " + str(error))
                 raise HTTPException(
-                    "MissingSchema", {"Id": self.config.data.get("auth.server", "None")}
+                    "MissingSchema",
+                    {"Id": self.config.data.get("auth.server", "None")},
                 )
 
-            except Exception as error:
+            except Exception:
                 raise
 
             else:
@@ -212,8 +227,12 @@ class HTTP(object):
             )
 
         self._get_header(data)
-        data["timeout"] = data.get("timeout") or self.config.data["http.timeout"]
-        data["verify"] = data.get("verify") or self.config.data.get("auth.ssl", False)
+        data["timeout"] = (
+            data.get("timeout") or self.config.data["http.timeout"]
+        )
+        data["verify"] = data.get("verify") or self.config.data.get(
+            "auth.ssl", False
+        )
         data["url"] = self._replace_user_info(data["url"])
         self._process_params(data.get("params") or {})
         self._process_params(data.get("json") or {})
@@ -258,7 +277,9 @@ class HTTP(object):
     def _authorization(self, data):
 
         auth = "MediaBrowser "
-        auth += "Client=%s, " % self.config.data.get("app.name", "Jellyfin for Kodi")
+        auth += "Client=%s, " % self.config.data.get(
+            "app.name", "Jellyfin for Kodi"
+        )
         auth += "Device=%s, " % self.config.data.get(
             "app.device_name", "Unknown Device"
         )
@@ -269,7 +290,9 @@ class HTTP(object):
 
         data["headers"].update({"x-emby-authorization": auth})
 
-        if self.config.data.get("auth.token") and self.config.data.get("auth.user_id"):
+        if self.config.data.get("auth.token") and self.config.data.get(
+            "auth.user_id"
+        ):
 
             auth += ", UserId=%s" % self.config.data.get("auth.user_id")
             data["headers"].update(

@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import (
+    absolute_import,
+    division,
+    print_function,
+    unicode_literals,
+)
 
 import json
 import logging
@@ -20,20 +25,20 @@ def basic_info():
 
 def info():
     return (
-        "Path,Genres,SortName,Studios,Writer,Taglines,LocalTrailerCount,"
-        "OfficialRating,CumulativeRunTimeTicks,ItemCounts,"
-        "Metascore,AirTime,DateCreated,People,Overview,"
-        "CriticRating,CriticRatingSummary,Etag,ShortOverview,ProductionLocations,"
-        "Tags,ProviderIds,ParentId,RemoteTrailers,SpecialEpisodeNumbers,"
-        "MediaSources,VoteCount,RecursiveItemCount,PrimaryImageAspectRatio"
+        "Path,Genres,SortName,Studios,Writer,Taglines,LocalTrailerCount"
+        "OfficialRating,CumulativeRunTimeTicks,ItemCounts,Metascore,AirTime"
+        "DateCreated,People,Overview,CriticRating,CriticRatingSummary,Etag"
+        "ShortOverview,ProductionLocations,Tags,ProviderIds,ParentId"
+        "RemoteTrailers,SpecialEpisodeNumbers,MediaSources,VoteCount"
+        "RecursiveItemCount,PrimaryImageAspectRatio"
     )
 
 
 def music_info():
     return (
-        "Etag,Genres,SortName,Studios,Writer,"
-        "OfficialRating,CumulativeRunTimeTicks,Metascore,"
-        "AirTime,DateCreated,MediaStreams,People,ProviderIds,Overview,ItemCounts"
+        "Etag,Genres,SortName,Studios,Writer,OfficialRating"
+        "CumulativeRunTimeTicks,Metascore,AirTime,DateCreated,MediaStreams"
+        "People,ProviderIds,Overview,ItemCounts"
     )
 
 
@@ -68,11 +73,11 @@ class API(object):
     def _get_stream(self, handler, dest_file, params=None):
         self._http_stream("GET", handler, dest_file, {"params": params})
 
-    #################################################################################################
+    #########################################################################
 
     # Bigger section of the Jellyfin api
 
-    #################################################################################################
+    #########################################################################
 
     def try_server(self):
         return self._get("System/Info/Public")
@@ -124,11 +129,11 @@ class API(object):
             % (item_id, art, index, max_width, ext),
         )
 
-    #################################################################################################
+    #########################################################################
 
     # More granular api
 
-    #################################################################################################
+    #########################################################################
 
     def get_users(self):
         return self._get("Users")
@@ -137,7 +142,11 @@ class API(object):
         return self._get("Users/Public")
 
     def get_user(self, user_id=None):
-        return self.users() if user_id is None else self._get("Users/%s" % user_id)
+        return (
+            self.users()
+            if user_id is None
+            else self._get("Users/%s" % user_id)
+        )
 
     def get_user_settings(self, client="emby"):
         return self._get(
@@ -157,7 +166,10 @@ class API(object):
     def get_items(self, item_ids):
         return self.users(
             "/Items",
-            params={"Ids": ",".join(str(x) for x in item_ids), "Fields": info()},
+            params={
+                "Ids": ",".join(str(x) for x in item_ids),
+                "Fields": info(),
+            },
         )
 
     def get_sessions(self):
@@ -167,13 +179,17 @@ class API(object):
         return self.sessions(params={"DeviceId": device_id})
 
     def post_session(self, session_id, url, params=None, data=None):
-        return self.sessions("/%s/%s" % (session_id, url), "POST", params, data)
+        return self.sessions(
+            "/%s/%s" % (session_id, url), "POST", params, data
+        )
 
     def get_images(self, item_id):
         return self.items("/%s/Images" % item_id)
 
     def get_suggestion(self, media="Movie,Episode", limit=1):
-        return self.users("/Suggestions", params={"Type": media, "Limit": limit})
+        return self.users(
+            "/Suggestions", params={"Type": media, "Limit": limit}
+        )
 
     def get_recently_added(self, media=None, parent_id=None, limit=20):
         return self.user_items(
@@ -200,17 +216,23 @@ class API(object):
     def get_adjacent_episodes(self, show_id, item_id):
         return self.shows(
             "/%s/Episodes" % show_id,
-            {"UserId": "{UserId}", "AdjacentTo": item_id, "Fields": "Overview"},
+            {
+                "UserId": "{UserId}",
+                "AdjacentTo": item_id,
+                "Fields": "Overview",
+            },
         )
 
     def get_season(self, show_id, season_id):
         return self.shows(
-            "/%s/Episodes" % show_id, {"UserId": "{UserId}", "SeasonId": season_id}
+            "/%s/Episodes" % show_id,
+            {"UserId": "{UserId}", "SeasonId": season_id},
         )
 
     def get_genres(self, parent_id=None):
         return self._get(
-            "Genres", {"ParentId": parent_id, "UserId": "{UserId}", "Fields": info()}
+            "Genres",
+            {"ParentId": parent_id, "UserId": "{UserId}", "Fields": info()},
         )
 
     def get_recommendation(self, parent_id=None, limit=20):
@@ -248,7 +270,11 @@ class API(object):
     def get_channels(self):
         return self._get(
             "LiveTv/Channels",
-            {"UserId": "{UserId}", "EnableImages": True, "EnableUserData": True},
+            {
+                "UserId": "{UserId}",
+                "EnableImages": True,
+                "EnableUserData": True,
+            },
         )
 
     def get_intros(self, item_id):
@@ -267,7 +293,9 @@ class API(object):
         return self._get("System/Configuration/encoding")
 
     def get_ancestors(self, item_id):
-        return self.items("/%s/Ancestors" % item_id, params={"UserId": "{UserId}"})
+        return self.items(
+            "/%s/Ancestors" % item_id, params={"UserId": "{UserId}"}
+        )
 
     def get_items_theme_video(self, parent_id):
         return self.users(
@@ -298,7 +326,11 @@ class API(object):
     def get_seasons(self, show_id):
         return self.shows(
             "/%s/Seasons" % show_id,
-            params={"UserId": "{UserId}", "EnableImages": True, "Fields": info()},
+            params={
+                "UserId": "{UserId}",
+                "EnableImages": True,
+                "Fields": info(),
+            },
         )
 
     def get_date_modified(self, date, parent_id, media=None):
@@ -343,7 +375,9 @@ class API(object):
         )
 
     def favorite(self, item_id, option=True):
-        return self.users("/FavoriteItems/%s" % item_id, "POST" if option else "DELETE")
+        return self.users(
+            "/FavoriteItems/%s" % item_id, "POST" if option else "DELETE"
+        )
 
     def get_system_info(self):
         return self._get("System/Configuration")
@@ -353,7 +387,8 @@ class API(object):
 
     def session_add_user(self, session_id, user_id, option=True):
         return self.sessions(
-            "/%s/Users/%s" % (session_id, user_id), "POST" if option else "DELETE"
+            "/%s/Users/%s" % (session_id, user_id),
+            "POST" if option else "DELETE",
         )
 
     def session_playing(self, data):
@@ -366,7 +401,9 @@ class API(object):
         return self.sessions("/Playing/Stopped", "POST", json=data)
 
     def item_played(self, item_id, watched):
-        return self.users("/PlayedItems/%s" % item_id, "POST" if watched else "DELETE")
+        return self.users(
+            "/PlayedItems/%s" % item_id, "POST" if watched else "DELETE"
+        )
 
     def get_sync_queue(self, date, filters=None):
         return self._get(
@@ -416,7 +453,9 @@ class API(object):
         return self._post("LiveStreams/Close", json={"LiveStreamId": live_id})
 
     def close_transcode(self, device_id):
-        return self._delete("Videos/ActiveEncodings", params={"DeviceId": device_id})
+        return self._delete(
+            "Videos/ActiveEncodings", params={"DeviceId": device_id}
+        )
 
     def get_audio_stream(
         self,
@@ -478,7 +517,7 @@ class API(object):
         }
 
         # Changed to use non-Kodi specific setting.
-        if self.config.data.get("auth.ssl") == False:
+        if not self.config.data.get("auth.ssl"):
             request_settings["verify"] = False
 
         LOG.info("Sending %s request to %s" % (method, path))
@@ -495,7 +534,9 @@ class API(object):
         headers.update({"Content-type": "application/json"})
 
         try:
-            LOG.info("Trying to login to %s/%s as %s" % (server_url, path, username))
+            LOG.info(
+                "Trying to login to %s/%s as %s" % (server_url, path, username)
+            )
             response = self.send_request(
                 server_url,
                 path,
@@ -516,19 +557,20 @@ class API(object):
                 LOG.debug(headers)
 
                 return {}
-        except Exception as e:  # Find exceptions for likely cases i.e, server timeout, etc
+        except Exception as e:
+            # Find exceptions for likely cases i.e, server timeout, etc
             LOG.error(e)
 
         return {}
 
     def validate_authentication_token(self, server):
-
-        url = "%s/%s" % (server["address"], "system/info")
         authTokenHeader = {"X-MediaBrowser-Token": server["AccessToken"]}
         headers = self.get_default_headers()
         headers.update(authTokenHeader)
 
-        response = self.send_request(server["address"], "system/info", headers=headers)
+        response = self.send_request(
+            server["address"], "system/info", headers=headers
+        )
         return response.json() if response.status_code == 200 else {}
 
     def get_public_info(self, server_address):
@@ -543,11 +585,11 @@ class API(object):
         url = response.url.replace("/system/info/public", "")
         return url
 
-    #################################################################################################
+    #########################################################################
 
     # Syncplay
 
-    #################################################################################################
+    #########################################################################
 
     def _parse_precise_time(self, time):
         # We have to remove the Z and the least significant digit.
@@ -558,7 +600,9 @@ class API(object):
         server_address = self.config.data.get("auth.server")
         session = self.client.session
 
-        response = self.send_request(server_address, "GetUTCTime", session=session)
+        response = self.send_request(
+            server_address, "GetUTCTime", session=session
+        )
         response_received = datetime.utcnow()
         request_sent = response_received - response.elapsed
 

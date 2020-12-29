@@ -1,21 +1,26 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import (
+    absolute_import,
+    division,
+    print_function,
+    unicode_literals,
+)
 
 """ This will hold all configs from the client.
     Configuration set here will be used for the HTTP client.
 """
 
-#################################################################################################
+#############################################################################
 
 import logging
 
-#################################################################################################
+#############################################################################
 
 DEFAULT_HTTP_MAX_RETRIES = 3
 DEFAULT_HTTP_TIMEOUT = 30
 LOG = logging.getLogger("JELLYFIN." + __name__)
 
-#################################################################################################
+#############################################################################
 
 
 class Config(object):

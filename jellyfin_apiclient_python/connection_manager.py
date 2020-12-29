@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import (
+    absolute_import,
+    division,
+    print_function,
+    unicode_literals,
+)
 
 import json
 import logging
@@ -12,12 +17,11 @@ import urllib3
 
 from .api import API
 from .credentials import Credentials
-from .http import HTTP  # noqa: I201,I100
 
-#################################################################################################
+#############################################################################
 
 
-#################################################################################################
+#############################################################################
 
 LOG = logging.getLogger("JELLYFIN." + __name__)
 CONNECTION_STATE = {
@@ -27,7 +31,7 @@ CONNECTION_STATE = {
     "SignedIn": 3,
 }
 
-#################################################################################################
+#############################################################################
 
 
 class ConnectionManager(object):
@@ -94,7 +98,9 @@ class ConnectionManager(object):
 
         return servers
 
-    def login(self, server_url, username, password=None, clear=None, options=None):
+    def login(
+        self, server_url, username, password=None, clear=None, options=None
+    ):
 
         if not username:
             raise AttributeError("username cannot be empty")
@@ -130,11 +136,15 @@ class ConnectionManager(object):
         else:
             return {}  # No server found
 
-        found_server["DateLastAccessed"] = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
+        found_server["DateLastAccessed"] = datetime.now().strftime(
+            "%Y-%m-%dT%H:%M:%SZ"
+        )
         found_server["UserId"] = data["User"]["Id"]
         found_server["AccessToken"] = data["AccessToken"]
 
-        self.credentials.add_update_server(credentials["Servers"], found_server)
+        self.credentials.add_update_server(
+            credentials["Servers"], found_server
+        )
 
         info = {"Id": data["User"]["Id"], "IsSignedInOffline": True}
         self.credentials.add_update_user(server, info)
@@ -177,11 +187,14 @@ class ConnectionManager(object):
             result = self.API.get_public_info(server.get("address"))
 
             if not result:
-                LOG.error("Failed to connect to server: %s" % server.get("address"))
+                LOG.error(
+                    "Failed to connect to server: %s" % server.get("address")
+                )
                 return {"State": CONNECTION_STATE["Unavailable"]}
 
             LOG.info(
-                "calling onSuccessfulConnection with server %s", server.get("Name")
+                "calling onSuccessfulConnection with server %s",
+                server.get("Name"),
             )
 
             self._update_server_info(server, result)
@@ -278,7 +291,9 @@ class ConnectionManager(object):
 
         for found_server in found_servers:
 
-            server = self._convert_endpoint_address_to_manual_address(found_server)
+            server = self._convert_endpoint_address_to_manual_address(
+                found_server
+            )
 
             info = {
                 "Id": found_server["Id"],
@@ -354,7 +369,9 @@ class ConnectionManager(object):
 
         self._update_server_info(server, system_info)
 
-        server["DateLastAccessed"] = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
+        server["DateLastAccessed"] = datetime.now().strftime(
+            "%Y-%m-%dT%H:%M:%SZ"
+        )
         self.credentials.add_update_server(credentials["Servers"], server)
         self.credentials.set(credentials)
         self.server_id = server["Id"]
@@ -363,7 +380,9 @@ class ConnectionManager(object):
         self.config.data["auth.server"] = server["address"]
         self.config.data["auth.server-name"] = server["Name"]
         self.config.data["auth.server=id"] = server["Id"]
-        self.config.data["auth.ssl"] = options.get("ssl", self.config.data["auth.ssl"])
+        self.config.data["auth.ssl"] = options.get(
+            "ssl", self.config.data["auth.ssl"]
+        )
 
         result = {"Servers": [server]}
 

@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import (
+    absolute_import,
+    division,
+    print_function,
+    unicode_literals,
+)
 
 import logging
 
@@ -10,14 +15,14 @@ from .http import HTTP
 from .timesync_manager import TimeSyncManager
 from .ws_client import WSClient
 
-#################################################################################################
+#############################################################################
 
 
-#################################################################################################
+#############################################################################
 
 LOG = logging.getLogger("JELLYFIN." + __name__)
 
-#################################################################################################
+#############################################################################
 
 
 def callback(message, data):
